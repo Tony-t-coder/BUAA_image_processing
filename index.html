@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="./icon/boqi.ico" type="image/x-icon">
+    <title>图像风格化</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        button {
+        	height: 30px;
+        	width: 100px;
+        }
+        #header {
+            text-align: center;
+            padding: 20px 0;
+            background-color: #f0f0f0;
+        }
+        #main {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px;
+        }
+        #left, #right {
+            flex: 1;
+            padding: 20px;
+            height: 400px;
+            width: 400px;
+            padding-bottom: 0px;
+            /*border: 1px solid #ccc;*/
+        }
+        #left input[type="file"] {
+            display: block;
+            margin: 0 auto 20px;
+        }
+        #footer {
+        	padding: 10px 0;
+            text-align: center;
+        }
+        #options {
+        	padding: 10px 0;
+            text-align: center;
+        }
+        #options input[type="checkbox"] {
+            margin: 0 10px;
+        }
+        #upload{
+        	position: absolute;
+        	text-align: center;
+        	top: 45%;
+            left: 40%;
+            /*transform: translate(-50%, -50%);*/
+        }
+        .container {
+            position: relative;
+            width: 600px;
+            height: 400px;
+            border: 1px solid #ccc;
+            overflow: hidden;
+        }
+        #imageInput {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        #previewImage,  #previewStyleImage{
+            display: none;
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* 设置图片适应容器，保持比例 */
+        }
+
+        #resultImage {
+            display: none;
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* 设置图片适应容器，保持比例 */
+        }
+        #boqiImage {
+            display: none;
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* 设置图片适应容器，保持比例 */
+        }
+
+        #checkContent1, #checkContent2, #checkContent3, #checkContent4, #checkContent5, #checkContent6, #checkContent7, #checkContent8, #checkContent9{
+            display: none;
+            padding: 10px 0;
+            text-align: center;
+        }
+
+        #denoisingContent1, #denoisingContent2, #denoisingContent3, #denoisingContent4, #denoisingContent5, {
+            display: none;
+            padding: 10px 0;
+            text-align: center;
+        }
+
+        #EnhanceContent1, #EnhanceContent2{
+            display: none;
+            padding: 10px 0;
+            text-align: center;
+        }
+        #fpic_container{
+            position: relative;
+            /*border: 1px solid #ccc;*/
+            width: 1200px;
+            height: 300px;
+            display: none;
+            justify-content: center;
+            align-items: flex-start;
+            /*padding: 20px;*/
+            margin-left: 70px;
+            /*padding: 20px;*/
+        }
+        .fpic{
+            flex:1 ;
+            /*border: 1px solid #ccc;*/
+            height: 250px;
+            width: 200px;
+            text-align: center;
+/*            display: flex;*/
+        }
+
+        .fpicimage {
+            /*display: block;*/
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* 设置图片适应容器，保持比例 */
+        }
+        #style_container{
+            display: none;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px;
+        }
+        #StyleimageInput{
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+        #Styleupload{
+            position: absolute;
+            text-align: center;
+            top: 45%;
+            left: 40%;
+            /*transform: translate(-50%, -50%);*/
+        }
+        #shabi{
+            display: none;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px;
+            height: 400px;
+        }
+    </style>
+</head>
+<body>
+    <div id="header">
+        <h1>图像风格化</h1>
+    </div>
+    <div id="main">
+        <div id="left">
+        	<div class="container">
+        		<input type="file" id="imageInput" accept="image/*">
+        		<div id="upload">点击上传图片</div>
+        		<img id="previewImage" src="#" alt="Uploaded Image">
+    		</div>
+        </div>
+        <div id="right">
+            <div class="container" id="resultContainer">
+                <img id="resultImage" src="#">
+                <img id="boqiImage" src='./icon/boqi.gif'>
+            </div>
+        </div>
+    </div>
+    <div id="style_container">
+        <div class="container">
+            <input type="file" id="StyleimageInput" accept="image/*">
+            <div id="Styleupload">点击上传风格图</div>
+            <img id="previewStyleImage" src="#" alt="Uploaded StyleImage">
+        </div>
+    </div>
+    <div id="shabi">
+        
+    </div>
+    <div id="fpic_container">
+        <div id="fpic1container" class="fpic">
+            B
+            <img id="fpic1" src='#' class='fpicimage'>
+        </div>
+        <div id="fpic2container" class="fpic">
+            G
+            <img id="fpic2" src='#' class='fpicimage'>
+        </div>
+        <div id="fpic3container" class="fpic">
+            R
+            <img id="fpic3" src='#' class='fpicimage'>
+        </div>
+    </div>
+    <div id="options">
+    	<input type="radio" id="noise" name="options" value="option1">
+        <label for="noise">去除噪声</label>
+        <input type="radio" id="contour" name="options" value="option2">
+        <label for="contour">提取轮廓</label>
+        <input type="radio" id="smooth" name="options" value="option3">
+        <label for="smooth">人像磨皮</label>
+        <input type="radio" id="style" name="options" value="option4">
+        <label for="style">风格迁移</label>
+        <input type="radio" id="whiten" name="options" value="option5">
+        <label for="whiten">白化</label>
+        <input type="radio" id="whitebalance" name="options" value="option6">
+        <label for="whitebalance">白平衡</label>
+        <input type="radio" id="shapen" name="options" value="option7">
+        <label for="shapen">锐化</label>
+        <input type="radio" id="Enhancement" name="options" value="option8">
+        <label for="Enhancement">图像增强</label>
+        <input type="radio" id="Frequency" name="options" value="option9">
+        <label for="Frequency">频率域滤波</label>
+    </div>
+    <div id="checkContent1">
+        <input type="radio" id="jun" name="denoisingOptions" value="denoisingOption1">
+        <label for="jun">均值滤波</label>
+        <input type="radio" id="zhoong" name="denoisingOptions" value="denoisingOption2">
+        <label for="zhoong">中值滤波</label>
+        <input type="radio" id="gao" name="denoisingOptions" value="denoisingOption3">
+        <label for="gao">高斯滤波</label>
+        <input type="radio" id="wei" name="denoisingOptions" value="denoisingOption4">
+        <label for="wei">维纳滤波</label>
+        <input type="radio" id="ni" name="denoisingOptions" value="denoisingOption5">
+        <label for="ni">逆滤波</label>
+        <div id="denoisingContent1" style="display: none;">
+            <p>kernel_size: <span id="jun_value">10</span></p>
+        <input type="range" id="jun_slider" min="3" max="50" value="10" step="2">
+        </div>
+        <div id="denoisingContent2" style="display: none;">
+            <p>kernel_size: <span id="zhong_value">10</span></p>
+        <input type="range" id="zhong_slider" min="3" max="50" value="10" step="2">
+        </div>
+        <div id="denoisingContent3" style="display: none;">
+            <p>kernel_size: <span id="gao_value">10</span></p>
+        <input type="range" id="gao_slider" min="3" max="50" value="10" step="2">
+        </div>
+        <div id="denoisingContent4" style="display: none;">
+            <p>motion_angle: <span id="wei1_value">60</span></p>
+            <input type="range" id="wei1_slider" min="0" max="360" value="60" step="1">
+            <p>motion_degree: <span id="wei2_value">9</span></p>
+            <input type="range" id="wei2_slider" min="1" max="100" value="9" step="1">
+            <p>noise_degree: <span id="wei3_value">0.1</span></p>
+            <input type="range" id="wei3_slider" min="0" max="1" value="0.1" step="0.05">
+            <p>k: <span id="wei4_value">0.01</span></p>
+            <input type="range" id="wei4_slider" min="0.001" max="0.5" value="0.01" step="0.001">
+        </div>
+        <div id="denoisingContent5" style="display: none;">
+            <p>motion_angle: <span id="ni1_value">60</span></p>
+            <input type="range" id="ni1_slider" min="0" max="360" value="60" step="1">
+            <p>motion_degree: <span id="ni2_value">9</span></p>
+            <input type="range" id="ni2_slider" min="1" max="100" value="9" step="1">
+            <p>noise_degree: <span id="ni3_value">0.1</span></p>
+            <input type="range" id="ni3_slider" min="0" max="1" value="0.1" step="0.05">
+        </div>
+
+    </div>
+    <div id="checkContent3">
+        <p>kernel_size: <span id="mopi_value">10</span></p>
+        <input type="range" id="mopi_slider" min="3" max="100" value="10" step="2">
+    </div>
+    <div id="checkContent4">
+        <p>s_weight: <span id="style1_value">1</span></p>
+        <input type="range" id="style1_slider" min="0" max="2" value="1" step="0.1">
+        <p>c_weight: <span id="style2_value">1</span></p>
+        <input type="range" id="style2_slider" min="0" max="2" value="1" step="0.1">
+        <p>resolution: <span id="style3_value">512</span></p>
+        <input type="range" id="style3_slider" min="128" max="1024" value="512" step="2">
+        <p>epoch: <span id="style4_value">700</span></p>
+        <input type="range" id="style4_slider" min="500" max="2000" value="700" step="10">
+    </div>
+    <div id="checkContent6">
+        <p>k: <span id="bai_value">0.5</span></p>
+        <input type="range" id="bai_slider" min="0" max="1" value="0.5" step="0.01">
+    </div>
+    <div id="checkContent7">
+        <p>intensity: <span id="rui_value">0.2</span></p>
+        <input type="range" id="rui_slider" min="0" max="0.5" value="0.2" step="0.01">
+    </div>
+    <div id="checkContent8">
+        <input type="radio" id="gamma" name="EnhanceOptions" value="EnhanceOption1">
+        <label for="gamma">gamma变换</label>
+        <input type="radio" id="retinex" name="EnhanceOptions" value="EnhanceOption2">
+        <label for="retinex">retinex算法</label>
+        <div id="EnhanceContent1" style="display: none;">
+            <p>gamma: <span id="gamma_value">1</span></p>
+            <input type="range" id="gamma_slider" min="0" max="5" value="1" step="0.05">
+        </div>
+        <div id="EnhanceContent2" style="display: none;">
+            <p>gamma: <span id="retinex_value">0.2</span></p>
+            <input type="range" id="retinex_slider" min="0" max="1" value="0.2" step="0.01">
+        </div>
+    </div>
+    <div id="checkContent9">
+        <input type="radio" id="iedalLow" name="FrequencyOptions" value="FrequencyOption1">
+        <label for="iedalLow">理想低通/高通</label>
+        <input type="radio" id="idealPass" name="FrequencyOptions" value="FrequencyOption2">
+        <label for="idealPass">理想带通/带阻</label>
+        <input type="radio" id="ButterPass" name="FrequencyOptions" value="FrequencyOption3">
+        <label for="ButterPass">巴特沃斯带通/带阻</label>
+        <input type="radio" id="GaussianPass" name="FrequencyOptions" value="FrequencyOption4">
+        <label for="GaussianPass">高斯带通/带阻</label>
+        <div id="FrequencyContent1" style="display: none;">
+            <p>p: <span id="lidi1_value">1</span></p>
+            <input type="range" id="lidi1_slider" min="0" max="1" value="1" step="1">
+            <p>radius: <span id="lidi2_value">30</span></p>
+            <input type="range" id="lidi2_slider" min="0" max="300" value="30" step="1">
+        </div>
+        <div id="FrequencyContent2" style="display: none;">
+            <p>p: <span id="lidai1_value">1</span></p>
+            <input type="range" id="lidai1_slider" min="0" max="1" value="1" step="1">
+            <p>radius: <span id="lidai2_value">30</span></p>
+            <input type="range" id="lidai2_slider" min="0" max="300" value="30" step="1">
+            <p>width: <span id="lidai3_value">20</span></p>
+            <input type="range" id="lidai3_slider" min="0" max="100" value="20" step="1">
+        </div>
+        <div id="FrequencyContent3" style="display: none;">
+            <p>p: <span id="butter1_value">1</span></p>
+            <input type="range" id="butter1_slider" min="0" max="1" value="1" step="1">
+            <p>radius: <span id="butter2_value">30</span></p>
+            <input type="range" id="butter2_slider" min="0" max="300" value="30" step="1">
+            <p>width: <span id="butter3_value">20</span></p>
+            <input type="range" id="butter3_slider" min="0" max="100" value="20" step="1">
+            <p>n: <span id="butter4_value">2</span></p>
+            <input type="range" id="butter4_slider" min="0.1.05" max="10" value="2" step="0.05">
+        </div>
+        <div id="FrequencyContent4" style="display: none;">
+            <p>p: <span id="gaussian1_value">1</span></p>
+            <input type="range" id="gaussian1_slider" min="0" max="1" value="1" step="1">
+            <p>radius: <span id="gaussian2_value">30</span></p>
+            <input type="range" id="gaussian2_slider" min="0" max="300" value="30" step="1">
+            <p>width: <span id="gaussian3_value">20</span></p>
+            <input type="range" id="gaussian3_slider" min="0" max="100" value="20" step="1">
+        </div>
+    </div>
+    <div id="footer">
+        <button id="submit">确认提交</button>
+    		<button id="download" onclick="downloadFile()">下载图片</button>
+    	</a>
+    </div>
+    
+    <hr>
+    
+
+    <script>
+        const imageInput = document.getElementById('imageInput');
+        const previewImage = document.getElementById('previewImage');
+        const StyleimageInput = document.getElementById('StyleimageInput');
+        const previewStyleImage = document.getElementById('previewStyleImage');
+        const TextInput = document.getElementById('upload');
+        const StyleTextInput = document.getElementById('Styleupload');
+        const submitButton = document.getElementById('submit');
+        const noiseCheckbox = document.getElementById('noise');
+        const contourCheckbox = document.getElementById('contour');
+        const smoothCheckbox = document.getElementById('smooth');
+        const styleCheckbox = document.getElementById('style');
+        const whitenCheckbox = document.getElementById('whiten');
+        const resultImage = document.getElementById('resultImage');
+        const style_container = document.getElementById('style_container');
+        const right = document.getElementById('right');
+        const shabi = document.getElementById('shabi');
+        const boqiImage = document.getElementById('boqiImage');
+
+        var options = document.querySelectorAll('input[name="options"]');
+        var contents = document.querySelectorAll('[id^="checkContent"]');
+
+        // 处理操作选项框对应的页面变化
+        for (var i = 0; i < options.length; i++) {
+            options[i].addEventListener('change', function() {
+                var selectedOption = this.value;
+
+                // 隐藏所有内容
+                for (var j = 0; j < contents.length; j++) {
+                    contents[j].style.display = 'none';
+                }
+                if (selectedOption == 'option4') {
+                    style_container.style.display = 'block';
+                    right.style.position = 'absolute';
+                    right.style.top = '580px';
+                    right.style.left = '360px';
+                    style_container.style.position = 'absolute';
+                    style_container.style.top = '145px';
+                    style_container.style.left = '688px';
+                    shabi.style.display = 'block';
+                } else {
+                    style_container.style.display = 'none';
+                    right.style.position = 'inherit';
+                    shabi.style.display = 'none';
+                }
+                // 根据选项显示对应内容
+                var contentId = 'checkContent' + selectedOption.substr(selectedOption.length - 1);
+                var selectedContent = document.getElementById(contentId);
+                if (selectedContent) {
+                    selectedContent.style.display = 'block';
+                }
+                
+            });
+        }
+
+        // 去噪方法对应选项框
+        var denoisingoptions = document.querySelectorAll('input[name="denoisingOptions"]');
+        var denoisingcontents = document.querySelectorAll('[id^="denoisingContent"]');
+
+        for (var i = 0; i < denoisingoptions.length; i++) {
+            denoisingoptions[i].addEventListener('change', function() {
+                var selectedOption = this.value;
+
+                // 隐藏所有内容
+                for (var j = 0; j < denoisingcontents.length; j++) {
+                    denoisingcontents[j].style.display = 'none';
+                }
+
+                // 根据选项显示对应内容
+                var contentId = 'denoisingContent' + selectedOption.substr(selectedOption.length - 1);
+                var selectedContent = document.getElementById(contentId);
+                if (selectedContent) {
+                    selectedContent.style.display = 'block';
+                }
+            });
+        }
+
+        // 图像增强对应选项框
+        var Enhanceoptions = document.querySelectorAll('input[name="EnhanceOptions"]');
+        var Enhancecontents = document.querySelectorAll('[id^="EnhanceContent"]');
+
+        for (var i = 0; i < Enhanceoptions.length; i++) {
+            Enhanceoptions[i].addEventListener('change', function() {
+                var selectedOption = this.value;
+
+                // 隐藏所有内容
+                for (var j = 0; j < Enhancecontents.length; j++) {
+                    Enhancecontents[j].style.display = 'none';
+                }
+
+                // 根据选项显示对应内容
+                var contentId = 'EnhanceContent' + selectedOption.substr(selectedOption.length - 1);
+                var selectedContent = document.getElementById(contentId);
+                if (selectedContent) {
+                    selectedContent.style.display = 'block';
+                }
+            });
+        }
+
+        // 频率域滤波对应选项框
+        var Frequencyoptions = document.querySelectorAll('input[name="FrequencyOptions"]');
+        var Frequencycontents = document.querySelectorAll('[id^="FrequencyContent"]');
+
+        for (var i = 0; i < Frequencyoptions.length; i++) {
+            Frequencyoptions[i].addEventListener('change', function() {
+                var selectedOption = this.value;
+
+                // 隐藏所有内容
+                for (var j = 0; j < Frequencycontents.length; j++) {
+                    Frequencycontents[j].style.display = 'none';
+                }
+
+                // 根据选项显示对应内容
+                var contentId = 'FrequencyContent' + selectedOption.substr(selectedOption.length - 1);
+                var selectedContent = document.getElementById(contentId);
+                if (selectedContent) {
+                    selectedContent.style.display = 'block';
+                }
+            });
+        }
+
+        // 磨皮的滑动条
+        var mopi_slider = document.getElementById('mopi_slider');
+        var mopi_valueDisplay = document.getElementById('mopi_value');
+
+        mopi_slider.addEventListener('input', function() {
+            mopi_valueDisplay.textContent = mopi_slider.value;
+        });
+
+        // 白平衡的滑动条
+        var bai_slider = document.getElementById('bai_slider');
+        var bai_valueDisplay = document.getElementById('bai_value');
+
+        bai_slider.addEventListener('input', function() {
+            bai_valueDisplay.textContent = bai_slider.value;
+        });
+
+        // 锐化的滑动条
+        var rui_slider = document.getElementById('rui_slider');
+        var rui_valueDisplay = document.getElementById('rui_value');
+
+        rui_slider.addEventListener('input', function() {
+            rui_valueDisplay.textContent = rui_slider.value;
+        })
+
+        
+        // 均值滤波滑动条
+        var jun_slider = document.getElementById('jun_slider');
+        var jun_valueDisplay = document.getElementById('jun_value');
+
+        jun_slider.addEventListener('input', function() {
+            jun_valueDisplay.textContent = jun_slider.value;
+        })
+
+        // 中值滤波滑动条
+        var zhong_slider = document.getElementById('zhong_slider');
+        var zhong_valueDisplay = document.getElementById('zhong_value');
+
+        zhong_slider.addEventListener('input', function() {
+            zhong_valueDisplay.textContent = zhong_slider.value;
+        })
+
+        // 高斯滤波滑动条
+        var gao_slider = document.getElementById('gao_slider');
+        var gao_valueDisplay = document.getElementById('gao_value');
+
+        gao_slider.addEventListener('input', function() {
+            gao_valueDisplay.textContent = gao_slider.value;
+        })
+
+        // 维纳滤波滑动条们
+        var wei1_slider = document.getElementById('wei1_slider');
+        var wei1_valueDisplay = document.getElementById('wei1_value');
+
+        wei1_slider.addEventListener('input', function() {
+            wei1_valueDisplay.textContent = wei1_slider.value;
+        })
+
+        var wei2_slider = document.getElementById('wei2_slider');
+        var wei2_valueDisplay = document.getElementById('wei2_value');
+
+        wei2_slider.addEventListener('input', function() {
+            wei2_valueDisplay.textContent = wei2_slider.value;
+        })
+
+        var wei3_slider = document.getElementById('wei3_slider');
+        var wei3_valueDisplay = document.getElementById('wei3_value');
+
+        wei3_slider.addEventListener('input', function() {
+            wei3_valueDisplay.textContent = wei3_slider.value;
+        })
+
+        var wei4_slider = document.getElementById('wei4_slider');
+        var wei4_valueDisplay = document.getElementById('wei4_value');
+
+        wei4_slider.addEventListener('input', function() {
+            wei4_valueDisplay.textContent = wei4_slider.value;
+        })
+
+        // 逆滤波滑动条们
+        var ni1_slider = document.getElementById('ni1_slider');
+        var ni1_valueDisplay = document.getElementById('ni1_value');
+
+        ni1_slider.addEventListener('input', function() {
+            ni1_valueDisplay.textContent = ni1_slider.value;
+        })
+
+        var ni2_slider = document.getElementById('ni2_slider');
+        var ni2_valueDisplay = document.getElementById('ni2_value');
+
+        ni2_slider.addEventListener('input', function() {
+            ni2_valueDisplay.textContent = ni2_slider.value;
+        })
+
+        var ni3_slider = document.getElementById('ni3_slider');
+        var ni3_valueDisplay = document.getElementById('ni3_value');
+
+        ni3_slider.addEventListener('input', function() {
+            ni3_valueDisplay.textContent = ni3_slider.value;
+        })
+
+        // 图像增强滑动条
+        var gamma_slider = document.getElementById('gamma_slider');
+        var gamma_valueDisplay = document.getElementById('gamma_value');
+
+        gamma_slider.addEventListener('input', function() {
+            gamma_valueDisplay.textContent = gamma_slider.value;
+        })
+
+        var retinex_slider = document.getElementById('retinex_slider');
+        var retinex_valueDisplay = document.getElementById('retinex_value');
+
+        retinex_slider.addEventListener('input', function() {
+            retinex_valueDisplay.textContent = retinex_slider.value;
+        })
+
+
+        // 频率域滤波
+        // 理想低通/高通
+        var lidi1_slider = document.getElementById('lidi1_slider');
+        var lidi1_valueDisplay = document.getElementById('lidi1_value');
+
+        lidi1_slider.addEventListener('input', function() {
+            lidi1_valueDisplay.textContent = lidi1_slider.value;
+        })
+
+        var lidi2_slider = document.getElementById('lidi2_slider');
+        var lidi2_valueDisplay = document.getElementById('lidi2_value');
+
+        lidi2_slider.addEventListener('input', function() {
+            lidi2_valueDisplay.textContent = lidi2_slider.value;
+        })
+
+        // 理想带通/带阻
+        var lidai1_slider = document.getElementById('lidai1_slider');
+        var lidai1_valueDisplay = document.getElementById('lidai1_value');
+
+        lidai1_slider.addEventListener('input', function() {
+            lidai1_valueDisplay.textContent = lidai1_slider.value;
+        })
+
+        var lidai2_slider = document.getElementById('lidai2_slider');
+        var lidai2_valueDisplay = document.getElementById('lidai2_value');
+
+        lidai2_slider.addEventListener('input', function() {
+            lidai2_valueDisplay.textContent = lidai2_slider.value;
+        })
+
+        var lidai3_slider = document.getElementById('lidai3_slider');
+        var lidai3_valueDisplay = document.getElementById('lidai3_value');
+
+        lidai3_slider.addEventListener('input', function() {
+            lidai3_valueDisplay.textContent = lidai3_slider.value;
+        })
+
+        // 巴特沃斯带通/带阻
+        var butter1_slider = document.getElementById('butter1_slider');
+        var butter1_valueDisplay = document.getElementById('butter1_value');
+
+        butter1_slider.addEventListener('input', function() {
+            butter1_valueDisplay.textContent = butter1_slider.value;
+        })
+
+        var butter2_slider = document.getElementById('butter2_slider');
+        var butter2_valueDisplay = document.getElementById('butter2_value');
+
+        butter2_slider.addEventListener('input', function() {
+            butter2_valueDisplay.textContent = butter2_slider.value;
+        })
+
+        var butter3_slider = document.getElementById('butter3_slider');
+        var butter3_valueDisplay = document.getElementById('butter3_value');
+
+        butter3_slider.addEventListener('input', function() {
+            butter3_valueDisplay.textContent = butter3_slider.value;
+        })
+
+        var butter4_slider = document.getElementById('butter4_slider');
+        var butter4_valueDisplay = document.getElementById('butter4_value');
+
+        butter4_slider.addEventListener('input', function() {
+            butter4_valueDisplay.textContent = butter4_slider.value;
+        })
+
+        // 高斯带通/带阻
+        var gaussian1_slider = document.getElementById('gaussian1_slider');
+        var gaussian1_valueDisplay = document.getElementById('gaussian1_value');
+
+        gaussian1_slider.addEventListener('input', function() {
+            gaussian1_valueDisplay.textContent = gaussian1_slider.value;
+        })
+
+        var gaussian2_slider = document.getElementById('gaussian2_slider');
+        var gaussian2_valueDisplay = document.getElementById('gaussian2_value');
+
+        gaussian2_slider.addEventListener('input', function() {
+            gaussian2_valueDisplay.textContent = gaussian2_slider.value;
+        })
+
+        var gaussian3_slider = document.getElementById('gaussian3_slider');
+        var gaussian3_valueDisplay = document.getElementById('gaussian3_value');
+
+        gaussian3_slider.addEventListener('input', function() {
+            gaussian3_valueDisplay.textContent = gaussian3_slider.value;
+        })
+
+
+        // 风格化参数
+        var style1_slider = document.getElementById('style1_slider');
+        var style1_valueDisplay = document.getElementById('style1_value');
+
+        style1_slider.addEventListener('input', function() {
+            style1_valueDisplay.textContent = style1_slider.value;
+        })
+
+        var style2_slider = document.getElementById('style2_slider');
+        var style2_valueDisplay = document.getElementById('style2_value');
+
+        style2_slider.addEventListener('input', function() {
+            style2_valueDisplay.textContent = style2_slider.value;
+        })
+
+        var style3_slider = document.getElementById('style3_slider');
+        var style3_valueDisplay = document.getElementById('style3_value');
+
+        style3_slider.addEventListener('input', function() {
+            style3_valueDisplay.textContent = style3_slider.value;
+        })
+
+        var style4_slider = document.getElementById('style4_slider');
+        var style4_valueDisplay = document.getElementById('style4_value');
+
+        style4_slider.addEventListener('input', function() {
+            style4_valueDisplay.textContent = style4_slider.value;
+        })
+
+        // 去噪选项框
+        // var denoisingOptions = document.querySelectorAll('input[name="denoisingOptions"]');
+        // var denoisingContent = document.getElementById('denoising_options')
+        // noiseCheckbox.addEventListener('change', function(){
+        //     denoisingContent.style.display = 'block';
+        // })
+              
+
+        // 提交
+        submitButton.addEventListener('click', () => {
+            // Handle image processing based on selected options
+            // Record the order of selected options
+            event.preventDefault(); // 阻止默认表单提交行为
+            resultImage.style.display = 'none';
+            var selectedOption = document.querySelector('input[name="options"]:checked').value;
+            console.log("The user selected the option:",selectedOption);
+            var file = imageInput.files[0];
+		    var formData = new FormData();
+		    formData.append('image', file);
+            formData.append('option', selectedOption);
+            if (selectedOption == "option1"){
+                console.log("denoising!");
+                var selectedDenoisingOption = document.querySelector('input[name="denoisingOptions"]:checked').value;
+                formData.append('denoisingoption', selectedDenoisingOption);
+                if(selectedDenoisingOption == "denoisingOption1"){
+                    console.log("均值滤波!");
+                    formData.append('kernel_size', jun_slider.value);
+                } else if(selectedDenoisingOption == "denoisingOption2"){
+                    console.log("中值滤波!");
+                    formData.append('kernel_size', zhong_slider.value);
+                } else if(selectedDenoisingOption == "denoisingOption3"){
+                    console.log("高斯滤波!");
+                    formData.append('kernel_size', gao_slider.value);
+                } else if(selectedDenoisingOption == "denoisingOption4"){
+                    console.log("维纳滤波!");
+                    formData.append('motion_angle', wei1_slider.value);
+                    formData.append('motion_degree', wei2_slider.value);
+                    formData.append('noise_degree', wei3_slider.value);
+                    formData.append('k', wei4_slider.value);
+                } else if(selectedDenoisingOption == "denoisingOption5"){
+                    console.log("逆滤波!");
+                    formData.append('motion_angle', ni1_slider.value);
+                    formData.append('motion_degree', ni2_slider.value);
+                    formData.append('noise_degree', ni3_slider.value);
+                }
+            } else if(selectedOption == "option2"){
+                console.log("contour extraction！");
+            } else if(selectedOption == "option3"){
+                console.log("portrait retouching!");
+                formData.append('kernel_size', mopi_slider.value);
+            } else if(selectedOption == "option4"){
+                console.log("style transaction!");
+                var Stylefile = StyleimageInput.files[0];
+                formData.append('Styleimage', Stylefile);
+                formData.append('s_weight', style1_slider.value);
+                formData.append('c_weight', style2_slider.value);
+                formData.append('resolution', style3_slider.value);
+                formData.append('epoch', style4_slider.value);
+            } else if(selectedOption == "option5"){
+                console.log("whiten!");
+            } else if(selectedOption == "option6"){
+                console.log("white balance!");
+                formData.append('k', bai_slider.value);
+            } else if(selectedOption == "option7"){
+                console.log("shapen!");
+                formData.append('intensity', rui_slider.value);
+            } else if(selectedOption == "option8"){
+                console.log("enhance!");
+                var selectedEnhanceOption = document.querySelector('input[name="EnhanceOptions"]:checked').value;
+                formData.append('enhanceoption', selectedEnhanceOption);
+                console.log(selectedEnhanceOption);
+                if(selectedEnhanceOption == "EnhanceOption1"){
+                    console.log("gamma变换！");
+                    formData.append('gamma', gamma_slider.value);
+                } else if(selectedEnhanceOption == "EnhanceOption2"){
+                    console.log("retinex算法！");
+                    formData.append('gamma', retinex_slider.value);
+                }
+            } else if(selectedOption == "option9"){
+                console.log("Frequency Filter！");
+                var selectedFrequencyOption = document.querySelector('input[name="FrequencyOptions"]:checked').value;
+                formData.append('frequencyoption', selectedFrequencyOption);
+                if(selectedFrequencyOption == "FrequencyOption1"){
+                    console.log("理想低通/高通！");
+                    formData.append('p', lidi1_slider.value);
+                    formData.append('radius', lidi2_slider.value);
+                } else if(selectedFrequencyOption == "FrequencyOption2"){
+                    console.log("理想带通/带阻！");
+                    formData.append('p', lidai1_slider.value);
+                    formData.append('radius', lidai2_slider.value);
+                    formData.append('width', lidai3_slider.value);
+                } else if(selectedFrequencyOption == "FrequencyOption3"){
+                    console.log("巴特沃斯带通/带阻！");
+                    formData.append('p', butter1_slider.value);
+                    formData.append('radius', butter2_slider.value);
+                    formData.append('width', butter3_slider.value);
+                    formData.append('n', butter4_slider.value);
+                } else if(selectedFrequencyOption == "FrequencyOption4"){
+                    console.log("高斯带通/带阻！");
+                    formData.append('p', gaussian1_slider.value);
+                    formData.append('radius', gaussian2_slider.value);
+                    formData.append('width', gaussian3_slider.value);
+                } 
+            }
+            if(selectedOption == 'option4'){
+                setInterval(function() {
+                    // 在这里放置你想要执行的程序
+                    console.log("这是一段程序");
+                    var timestamp = new Date().getTime();
+                    resultImage.src = "./result/image.png?" + timestamp;
+                    resultImage.style.display = 'block';
+                }, 1000);
+            }
+            
+            console.log(formData);
+            let myHeaders = new Headers({
+                'Access-Control-Allow-Origin': '*',
+            });
+            boqiImage.style.display = 'block';
+		    fetch("http://127.0.0.1:5000/process", {
+		        method: 'POST',
+		        body: formData,
+                mode: 'cors',
+                timeout: 3000 // 设置超时时间为3秒
+		    })
+            .then((response) => response.json())
+		    .then(data => {
+
+                var timestamp = new Date().getTime(); // 获取当前时间戳
+		        resultImage.src = "./result/image.png?" + timestamp;
+                resultImage.style.display = 'block';
+                boqiImage.style.display = 'none';
+                var fpic_container = document.getElementById('fpic_container')
+                if(selectedOption == 'option9' && (selectedFrequencyOption == 'FrequencyOption1' || selectedFrequencyOption == 'FrequencyOption2' || selectedFrequencyOption == 'FrequencyOption3' || selectedFrequencyOption == 'FrequencyOption4')){
+                    var fpic1 = document.getElementById('fpic1');
+                    var fpic2 = document.getElementById('fpic2');
+                    var fpic3 = document.getElementById('fpic3');
+                    
+                    fpic1.src = "./result/0.png?" + timestamp;
+                    fpic2.src = "./result/1.png?" + timestamp;
+                    fpic3.src = "./result/2.png?" + timestamp;
+                    fpic_container.style.display = 'flex';
+                } else {
+                    console.log('display:none');
+                    fpic_container.style.display = 'none';
+                }
+                
+
+
+		    })
+		    .catch(error => console.error('Error:', error));
+            
+        });
+
+
+
+        imageInput.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file.size > 1024 * 1024 * 10) {
+                alert("文件大小不能超过10MB！");
+                input.value = ''; // 清除已选择的文件
+            }
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImage.src = e.target.result;
+                previewImage.style.display = 'block';
+                TextInput.style.display = 'none';
+            }
+            reader.readAsDataURL(file);
+        });
+
+        StyleimageInput.addEventListener('change', function(event) {
+            console.log('111');
+            const file = event.target.files[0];
+            if (file.size > 1024 * 1024 * 10) {
+                alert("文件大小不能超过10MB！");
+                input.value = ''; // 清除已选择的文件
+            }
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewStyleImage.src = e.target.result;
+                previewStyleImage.style.display = 'block';
+                StyleTextInput.style.display = 'none';
+            }
+            reader.readAsDataURL(file);
+        });
+
+        // 去噪选项框
+
+    function downloadFile() {
+        // 创建一个虚拟的 URL，可以是你要下载的文件路径
+        var fileURL = './result/image.png';
+
+        // 创建一个 <a> 元素
+        var link = document.createElement('a');
+        link.href = fileURL;
+
+        // 设置下载属性，文件名可以根据需要自定义
+        link.download = 'image1.png';
+
+        // 将链接添加到页面中
+        document.body.appendChild(link);
+
+        // 模拟点击链接以触发下载操作
+        link.click();
+
+        // 下载完成后移除链接元素
+        document.body.removeChild(link);
+    }
+
+        previewImage.addEventListener('click', function() {
+            // 这里可以添加调整图像位置和缩放的逻辑
+            // 例如，通过修改img标签的样式来实现位置和缩放的调整
+            // 示例：previewImage.style.transform = 'scale(1.2)';
+        });
+    </script>
+</body>
+</html>
