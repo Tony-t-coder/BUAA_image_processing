@@ -379,7 +379,7 @@
         const right = document.getElementById('right');
         const shabi = document.getElementById('shabi');
         const boqiImage = document.getElementById('boqiImage');
-
+        var myinterval = null;
         var options = document.querySelectorAll('input[name="options"]');
         var contents = document.querySelectorAll('[id^="checkContent"]');
 
@@ -821,14 +821,19 @@
                     formData.append('width', gaussian3_slider.value);
                 } 
             }
-            if(selectedOption == 'option4'){
-                setInterval(function() {
+            if(selectedOption == 'option4' && myinterval == null){
+                myinterval = setInterval(function() {
                     // 在这里放置你想要执行的程序
                     console.log("这是一段程序");
                     var timestamp = new Date().getTime();
                     resultImage.src = "./result/image.png?" + timestamp;
                     resultImage.style.display = 'block';
                 }, 1000);
+            } else {
+                if(myinterval != null) {
+                    clearInterval(myinterval);
+                    myinterval = null;
+                }
             }
             
             console.log(formData);
