@@ -166,6 +166,10 @@
             padding: 20px;
             height: 400px;
         }
+        #pt_container {
+            position: absolute;
+            left: 1150px;
+        }
     </style>
 </head>
 <body>
@@ -195,6 +199,9 @@
         </div>
     </div>
     <div id="shabi">
+        
+    </div>
+    <div id="pt_container" style="display: none">
         
     </div>
     <div id="fpic_container">
@@ -382,6 +389,7 @@
         var myinterval = null;
         var options = document.querySelectorAll('input[name="options"]');
         var contents = document.querySelectorAll('[id^="checkContent"]');
+        var pt_container = document.getElementById('pt_container');
 
         // 处理操作选项框对应的页面变化
         for (var i = 0; i < options.length; i++) {
@@ -836,6 +844,10 @@
                 }
             }
             
+            fetch("http://127.0.0.1:5000/delete", {
+                method: 'GET'
+            })
+
             console.log(formData);
             let myHeaders = new Headers({
                 'Access-Control-Allow-Origin': '*',
@@ -849,7 +861,11 @@
 		    })
             .then((response) => response.json())
 		    .then(data => {
-
+                var time = data['process_time'];
+                // 设置该 <div> 元素的内容为后端返回的数据
+                pt_container.textContent = "处理时间：" + time.toFixed(2) + "ms";
+                // 将该 <div> 元素添加到页面中
+                pt_container.style.display = "block"
                 var timestamp = new Date().getTime(); // 获取当前时间戳
 		        resultImage.src = "./result/image.png?" + timestamp;
                 resultImage.style.display = 'block';

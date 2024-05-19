@@ -9,15 +9,22 @@ import wiener
 import lightness
 import frequencyFiltering
 import style_transfer
+import time
 os.environ['KMP_DUPLICATE_LIB_OK']= 'TRUE'
 
 app = Flask(__name__)
 CORS(app)
 
+@app.route('/delete', methods=['GET'])
+def delete_image():
+    print("删除图片")
+    os.remove("../result/image.png")
+    return "ok"
 
 @app.route('/process', methods=['POST'])
 def process_image():
     # 从请求中获取上传的图片文件
+    T1 = time.time()
     print('Received request from frontend.')
     uploaded_image = request.files['image']
     option = request.form['option']
@@ -131,7 +138,10 @@ def process_image():
     print("保存成功，返回前端")
     # 返回处理后的图片URL
     # result = {'message': 'Data processed successfully'}
-    return jsonify({'resultImageUrl': path})
+    T2 = time.time()
+    T = ((T2 - T1)*1000)
+    print('程序运行时间:%s毫秒' % (T))
+    return jsonify({'process_time': T})
 
 #均值滤波
 def meanFilter(img, kernel_size):
